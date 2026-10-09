@@ -1044,29 +1044,30 @@
         }
       ];
 
-      // 2. HASIL PERSONA SESUAI RENTANG POIN & TEKS SPESIFIK
-     // --- COPY DARI SINI ---
-// Pastikan variabel 'hasilPersona' berisi judul persona yang didapat user.
-// Contoh cara mengambilnya dari objek PERSONA_RESULTS Anda:
-let hasilPersona = "";
-if (totalScore >= 12) {
-    hasilPersona = PERSONA_RESULTS.greenFlag.title;
-} else if (totalScore >= 8) {
-    hasilPersona = PERSONA_RESULTS.tanggung.title;
-} else {
-    hasilPersona = PERSONA_RESULTS.khilaf.title;
-}
-
-const scriptURL = 'https://script.google.com/macros/s/AKfycbx6tiR2JlvmrfL5bINTAoMD7Au5Q5fgY14lZE4wE-6EZtAiatYgy55XerypEurHlqIe/exec';
-
-fetch(scriptURL, {
-    method: 'POST',
-    mode: 'no-cors', // Penting agar tidak diblokir oleh sistem keamanan browser (CORS)
-    body: JSON.stringify({ persona: hasilPersona }),
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-})
-.then(() => console.log("Data berhasil dikirim ke Google Sheets!"))
-.catch(error => console.error("Error mengirim data!", error.message));
+     // 2. HASIL PERSONA SESUAI RENTANG POIN & TEKS SPESIFIK
+      const PERSONA_RESULTS = {
+        greenFlag: {
+          minScore: 12,
+          maxScore: 15,
+          imageHtml: '<img src="maskot-greenflag.png" alt="Maskot Senang" style="width:150px; margin: 0 auto;">',
+          title: "Si Paling Green Flag 🌿",
+          description: "Selamat! Kamu adalah teman kencan idaman Bumi. Gaya hidupmu udah membumi dan jejak karbonmu rendah banget. Lanjutkan terus!"
+        },
+        tanggung: {
+          minScore: 8,
+          maxScore: 11,
+          imageHtml: '<img src="maskot-tanggung.png" alt="Maskot Berpikir" style="width:150px; margin: 0 auto;">',
+          title: "Sobat Eco-Tanggung 🐢",
+          description: "Niatnya sih udah Go Green, tapi eksekusinya kadang masih maju-mundur pas lihat diskonan. Yuk, sedikit lagi bisa jadi Green Flag!"
+        },
+        khilaf: {
+          minScore: 5,
+          maxScore: 7,
+          imageHtml: '<img src="maskot-khilaf.png" alt="Maskot Kaget" style="width:150px; margin: 0 auto;">',
+          title: "Kaum Eco-Khilaf 🚨",
+          description: "Waduh, jejak karbonmu lumayan tinggi nih! Kayaknya masih sering khilaf pakai plastik dan boros energi. Yuk, mulai sadar diri!"
+        }
+      };
 
 
       // 3. APPLICATION STATE
@@ -1209,6 +1210,19 @@ fetch(scriptURL, {
           resultData = PERSONA_RESULTS.khilaf;
         }
 
+        // --- KODE PELACAK GOOGLE SHEETS (DIPINDAH KE SINI) ---
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx6tiR2JlvmrfL5bINTAoMD7Au5Q5fgY14lZE4wE-6EZtAiatYgy55XerypEurHlqIe/exec';
+        
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            body: JSON.stringify({ persona: resultData.title }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        })
+        .then(() => console.log("Data berhasil dikirim ke Google Sheets!"))
+        .catch(error => console.error("Error mengirim data!", error.message));
+        // --- BATAS KODE PELACAK ---
+
         // Set Persona details exactly as requested
         mascotWrapper.innerHTML = resultData.imageHtml;
         personaTitle.textContent = resultData.title;
@@ -1231,11 +1245,7 @@ fetch(scriptURL, {
         }
 
         switchView(resultView);
-
-        // Trigger confetti celebration
         triggerConfetti();
-
-        // Scroll to top smoothly
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
